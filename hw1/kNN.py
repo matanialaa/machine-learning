@@ -1,0 +1,24 @@
+import numpy as np
+from scipy.spatial.distance import cdist
+from sklearn.base import BaseEstimator, ClassifierMixin
+
+
+class kNN(BaseEstimator, ClassifierMixin):
+    def __init__(self, n_neighbors: int = 3):
+        self.n_neighbors = n_neighbors
+
+    def fit(self, X, y):
+        self.X = np.copy(X)
+        self.y = np.copy(y)
+        return self
+
+    def predict(self, X):
+        KNN_distances = cdist(X, self.X, 'euclidean')
+        KNN_index = np.argpartition(KNN_distances, self.n_neighbors, axis=1)[:, :self.n_neighbors]
+        KNN_labels = self.y[KNN_index]
+        predictions = np.sign(np.sum(KNN_labels, axis=1))
+
+        return predictions
+
+
+
